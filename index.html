@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUILT LIKE A BADASS // Trænings Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #080808; color: #fff; font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #080808; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* ── HEADER ── */
+.header {
+padding: 18px 28px;
+border-bottom: 1px solid rgba(255,255,255,0.08);
+display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+position: sticky; top: 0; z-index: 100;
+background: rgba(8,8,8,0.96); backdrop-filter: blur(12px);
+}
+.header-brand { font-family: ‘Barlow Condensed’, sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 0.12em; }
+.header-brand span { color: #C4A86B; }
+.header-tagline { font-size: 10px; letter-spacing: 0.2em; color: #888; margin-top: 2px; }
+
+.nav-tabs { display: flex; gap: 2px; background: #111; border: 1px solid rgba(255,255,255,0.08); padding: 3px; border-radius: 3px; }
+.nav-tab {
+font-family: ‘Barlow Condensed’, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+padding: 7px 16px; cursor: pointer; border-radius: 2px; border: none; background: transparent; color: #888;
+transition: all 0.15s;
+}
+.nav-tab.active { background: #C4A86B; color: #000; }
+.nav-tab:hover:not(.active) { color: #fff; background: #161616; }
+
+/* ── MAIN ── */
+.main { padding: 0 28px 80px; max-width: 920px; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── SETUP ── */
+.setup-screen { padding: 44px 0; }
+.setup-title { font-family: ‘Barlow Condensed’, sans-serif; font-size: 44px; font-weight: 900; letter-spacing: 0.06em; line-height: 1; margin-bottom: 6px; }
+.setup-sub { color: #888; font-size: 13px; letter-spacing: 0.05em; margin-bottom: 40px; }
+.setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 520px; }
+.setup-field { display: flex; flex-direction: column; gap: 7px; }
+.setup-label { font-size: 10px; letter-spacing: 0.2em; color: #888; text-transform: uppercase; }
+.setup-input {
+background: #111; border: 1px solid rgba(255,255,255,0.08); color: #fff;
+font-family: ‘Barlow’, sans-serif; font-size: 22px; font-weight: 600;
+padding: 13px 14px; border-radius: 2px; width: 100%; transition: border-color 0.15s;
+}
+.setup-input:focus { outline: none; border-color: #C4A86B; }
+.setup-input::placeholder { color: #333; font-size: 18px; }
+.setup-unit { font-size: 12px; color: #888; }
+.setup-btn {
+margin-top: 36px; background: #C4A86B; color: #000; border: none; border-radius: 2px;
+font-family: ‘Barlow Condensed’, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.15em;
+padding: 15px 44px; cursor: pointer; transition: background 0.15s;
+}
+.setup-btn:hover { background: #D4B87B; }
+
+/* ── WEEK BAR ── */
+.week-bar { display: flex; gap: 5px; padding: 20px 0 16px; overflow-x: auto; scrollbar-width: none; }
+.week-bar::-webkit-scrollbar { display: none; }
+.week-btn {
+flex-shrink: 0; font-family: ‘Barlow Condensed’, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+padding: 7px 12px; border-radius: 2px; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);
+background: transparent; color: #888; transition: all 0.15s; white-space: nowrap;
+}
+.week-btn.active { background: #C4A86B; color: #000; border-color: #C4A86B; }
+.week-btn.deload { border-color: #333; color: #555; }
+.week-btn.deload.active { background: #444; color: #fff; border-color: #444; }
+.week-btn:hover:not(.active) { border-color: #444; color: #fff; }
+
+/* ── DAY CARDS ── */
+.day-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+.day-card {
+border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; padding: 14px;
+cursor: pointer; transition: all 0.15s; background: #111; position: relative; overflow: hidden;
+}
+.day-card:hover { background: #161616; border-color: #333; }
+.day-card.active { background: rgba(255,255,255,0.03); }
+.day-card.completed::after { content: ‘✓’; position: absolute; top: 10px; right: 10px; font-size: 11px; color: #52C77A; }
+.day-card-label { font-size: 10px; letter-spacing: 0.18em; color: #888; margin-bottom: 3px; }
+.day-card-title { font-family: ‘Barlow Condensed’, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.06em; }
+.day-card-day { font-size: 11px; color: #888; margin-top: 3px; }
+
+/* ── SESSION ── */
+.session-header { margin-bottom: 24px; }
+.session-label { font-size: 10px; letter-spacing: 0.2em; color: #888; margin-bottom: 5px; }
+.session-title { font-family: ‘Barlow Condensed’, sans-serif; font-size: 36px; font-weight: 900; letter-spacing: 0.06em; line-height: 1; }
+
+/* ── EXERCISE CARDS ── */
+.exercise-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+.exercise-card { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; transition: border-color 0.15s; }
+.exercise-card.done { border-color: rgba(82,199,122,0.3); }
+.exercise-header { display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer; }
+.exercise-num { font-family: ‘Barlow Condensed’, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #333; min-width: 22px; }
+.exercise-info { flex: 1; }
+.exercise-name { font-size: 14px; font-weight: 600; color: #fff; }
+.exercise-sets-label { font-size: 11px; color: #888; margin-top: 2px; }
+.exercise-check {
+width: 20px; height: 20px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.15);
+background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+flex-shrink: 0; transition: all 0.15s;
+}
+.exercise-check.checked { background: #52C77A; border-color: #52C77A; }
+.exercise-body { padding: 0 18px 14px 54px; }
+.exercise-notes { font-size: 11px; color: #888; margin-bottom: 10px; font-style: italic; line-height: 1.5; }
+.expand-arrow { font-size: 10px; color: #555; transition: transform 0.15s; margin-left: 8px; }
+.exercise-card.expanded .expand-arrow { transform: rotate(180deg); }
+
+/* ── WEIGHT SETS ── */
+.weight-sets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.weight-set-card { background: #080808; border: 1px solid rgba(255,255,255,0.08); border-radius: 2px; padding: 9px 12px; min-width: 90px; }
+.weight-set-pct { font-size: 10px; letter-spacing: 0.1em; color: #888; margin-bottom: 3px; }
+.weight-set-kg { font-family: ‘Barlow Condensed’, sans-serif; font-size: 24px; font-weight: 700; color: #C4A86B; line-height: 1; }
+.weight-set-kg-unit { font-size: 13px; font-weight: 400; }
+.weight-set-reps { font-size: 11px; color: #888; margin-top: 2px; }
+.no-rm { font-size: 12px; color: #555; padding: 6px 0; }
+
+/* ── CHIN-UP BOX ── */
+.chinup-box { background: rgba(196,168,107,0.12); border: 1px solid rgba(196,168,107,0.2); border-radius: 2px; padding: 12px 14px; margin-bottom: 10px; }
+.chinup-total { font-family: ‘Barlow Condensed’, sans-serif; font-size: 30px; font-weight: 900; color: #C4A86B; line-height: 1; }
+.chinup-sub { font-size: 11px; color: #888; margin-top: 3px; }
+
+/* ── LOG INPUTS ── */
+.log-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.log-label { font-size: 10px; letter-spacing: 0.15em; color: #888; min-width: 55px; }
+.log-input {
+background: #080808; border: 1px solid rgba(255,255,255,0.08); color: #fff;
+font-family: ‘Barlow’, sans-serif; font-size: 13px; padding: 7px 10px; border-radius: 2px; flex: 1;
+transition: border-color 0.15s;
+}
+.log-input:focus { outline: none; border-color: #C4A86B; }
+
+/* ── COMPLETE BTN ── */
+.complete-session-btn {
+width: 100%; padding: 16px; background: transparent; border: 1px solid #52C77A; color: #52C77A;
+border-radius: 2px; font-family: ‘Barlow Condensed’, sans-serif; font-size: 14px; font-weight: 700;
+letter-spacing: 0.15em; cursor: pointer; transition: all 0.15s;
+}
+.complete-session-btn:hover, .complete-session-btn.done { background: #52C77A; color: #000; }
+
+/* ── DELOAD BANNER ── */
+.deload-banner {
+background: rgba(85,85,85,0.12); border: 1px solid #2a2a2a; border-radius: 3px;
+padding: 18px 20px; margin: 12px 0 20px; display: flex; gap: 14px; align-items: flex-start;
+}
+.deload-icon { font-size: 22px; }
+.deload-text-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.deload-text-body { font-size: 12px; color: #888; line-height: 1.6; }
+
+/* ── MACROS ── */
+.macros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+.macro-card { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; padding: 20px; }
+.macro-card-title { font-size: 10px; letter-spacing: 0.18em; color: #888; margin-bottom: 16px; text-transform: uppercase; }
+.macro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.macro-row:last-child { border-bottom: none; }
+.macro-name { font-size: 12px; color: #888; }
+.macro-val { font-family: ‘Barlow Condensed’, sans-serif; font-size: 26px; font-weight: 700; line-height: 1; }
+.macro-val small { font-size: 12px; color: #888; font-weight: 400; }
+.accent-text { color: #C4A86B; }
+.green-text { color: #52C77A; }
+.rule-box { margin-top: 20px; padding: 14px 18px; background: rgba(196,168,107,0.1); border: 1px solid rgba(196,168,107,0.2); border-radius: 3px; }
+.rule-box-label { font-size: 10px; letter-spacing: 0.18em; color: #C4A86B; margin-bottom: 5px; }
+.rule-box-title { font-size: 14px; font-weight: 600; }
+.rule-box-sub { font-size: 12px; color: #888; margin-top: 3px; line-height: 1.6; }
+
+.section-title { font-family: ‘Barlow Condensed’, sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0.06em; margin: 28px 0 14px; }
+.food-table { width: 100%; border-collapse: collapse; }
+.food-table th { font-size: 10px; letter-spacing: 0.15em; color: #888; text-align: left; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.food-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+.food-table tr:last-child td { border-bottom: none; }
+.food-meal { font-weight: 600; font-size: 13px; }
+.food-desc { color: #888; font-size: 12px; margin-top: 2px; line-height: 1.5; }
+.food-num { font-family: ‘Barlow Condensed’, sans-serif; font-size: 20px; font-weight: 700; }
+
+.hack-row { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.hack-num { font-family: ‘Barlow Condensed’, sans-serif; font-size: 20px; font-weight: 700; color: #C4A86B; min-width: 22px; }
+.hack-name { font-weight: 600; font-size: 13px; }
+.hack-tip { font-size: 12px; color: #888; margin-top: 2px; }
+
+/* ── PROGRESS ── */
+.stats-row { display: flex; gap: 12px; margin-top: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+.stat-card { flex: 1; min-width: 100px; background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; padding: 18px 14px; }
+.stat-label { font-size: 10px; letter-spacing: 0.16em; color: #888; margin-bottom: 6px; }
+.stat-val { font-family: ‘Barlow Condensed’, sans-serif; font-size: 32px; font-weight: 900; color: #C4A86B; }
+
+.progress-table { width: 100%; border-collapse: collapse; }
+.progress-table th { font-size: 10px; letter-spacing: 0.15em; color: #888; text-align: left; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.progress-table td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.progress-table tr:last-child td { border-bottom: none; }
+.td-week { color: #888; }
+.td-time { font-family: ‘Barlow Condensed’, sans-serif; font-size: 20px; font-weight: 700; }
+.td-note { font-size: 12px; color: #888; }
+
+.rm-update-box { margin-top: 36px; padding: 18px; background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 3px; }
+.rm-update-label { font-size: 10px; letter-spacing: 0.18em; color: #888; margin-bottom: 12px; }
+.rm-update-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.rm-field { flex: 1; min-width: 130px; }
+.rm-field-label { font-size: 10px; letter-spacing: 0.15em; color: #888; margin-bottom: 5px; }
+
+.roadmap-row { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.roadmap-week { min-width: 65px; }
+.roadmap-wlabel { font-family: ‘Barlow Condensed’, sans-serif; font-size: 12px; font-weight: 700; color: #C4A86B; letter-spacing: 0.1em; }
+.roadmap-date { font-size: 10px; color: #444; margin-top: 2px; }
+.roadmap-title { font-weight: 600; font-size: 14px; }
+.roadmap-desc { font-size: 12px; color: #888; margin-top: 3px; line-height: 1.5; }
+
+/* ── EXPORT/IMPORT ── */
+.data-btns { display: flex; gap: 10px; margin-top: 36px; flex-wrap: wrap; }
+.data-btn {
+font-family: ‘Barlow Condensed’, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+padding: 10px 20px; border-radius: 2px; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
+background: transparent; color: #888; transition: all 0.15s;
+}
+.data-btn:hover { color: #fff; border-color: #fff; }
+.data-btn.danger { border-color: rgba(224,82,82,0.4); color: #E05252; }
+.data-btn.danger:hover { background: #E05252; color: #000; }
+
+@media (max-width: 600px) {
+.header { padding: 14px 16px; }
+.main { padding: 0 16px 80px; }
+.setup-grid { grid-template-columns: 1fr; }
+.day-selector { grid-template-columns: 1fr 1fr; }
+.macros-grid { grid-template-columns: 1fr; }
+.session-title { font-size: 28px; }
+.setup-title { font-size: 34px; }
+.nav-tab { padding: 7px 10px; font-size: 11px; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+  <div>
+    <div class="header-brand">BUILT LIKE A <span>BADASS</span></div>
+    <div class="header-tagline" id="header-tagline">DEFRANCOS TRAINING SYSTEMS // 12-WEEK BLUEPRINT</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('train')">TRÆNING</button>
+    <button class="nav-tab" onclick="switchTab('macros')">MAKROER</button>
+    <button class="nav-tab" onclick="switchTab('progress')">LOG</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ═══════════════════════════ SETUP SCREEN ═══════════════════════════ -->
+
+  <div id="setup-screen" class="setup-screen">
+    <div class="setup-title">OPSÆTNING</div>
+    <div class="setup-sub">TRIN 01 // DINE 1RM MAXES — VÆR ÆRLIG. ESTIMÉR LAVT.</div>
+    <div class="setup-grid">
+      <div class="setup-field">
+        <div class="setup-label">Bench Press 1RM</div>
+        <input class="setup-input" id="s-bench" type="number" placeholder="100">
+        <div class="setup-unit">kg — sand max</div>
+      </div>
+      <div class="setup-field">
+        <div class="setup-label">Trap Bar Deadlift 1RM</div>
+        <input class="setup-input" id="s-tbdl" type="number" placeholder="160">
+        <div class="setup-unit">kg — sand max</div>
+      </div>
+      <div class="setup-field">
+        <div class="setup-label">Chin-up Max Reps</div>
+        <input class="setup-input" id="s-chin" type="number" placeholder="12">
+        <div class="setup-unit">reps — ét sæt, ingen stop</div>
+      </div>
+    </div>
+    <button class="setup-btn" onclick="doSetup()">START PROGRAMMET →</button>
+  </div>
+
+  <!-- ═══════════════════════════ TRAINING SECTION ═══════════════════════ -->
+
+  <div id="section-train" class="section" style="display:none;">
+
+```
+<div class="week-bar" id="week-bar"></div>
+
+<div id="deload-banner" class="deload-banner" style="display:none;">
+  <div class="deload-icon">⟳</div>
+  <div>
+    <div class="deload-text-title">DELOAD UGE — RESPEKTER DEN</div>
+    <div class="deload-text-body">50–60% på alle primære løft. Ingen new PRs. Kroppen adapterer i hvile — ikke under belastning. Steady state cardio på lower body dag: 20–30 min @ 60–70% max HR.</div>
+  </div>
+</div>
+
+<div class="day-selector" id="day-selector"></div>
+
+<div class="session-header">
+  <div class="session-label" id="session-label">UGE 1 // MANDAG</div>
+  <div class="session-title" id="session-title"><span id="session-day-label" style="color:#C4A86B;">DAG 1</span> UPPER BODY</div>
+</div>
+
+<div class="exercise-list" id="exercise-list"></div>
+
+<button class="complete-session-btn" id="complete-btn" onclick="completeSession()">MARKER SESSION SOM FÆRDIG</button>
+```
+
+  </div>
+
+  <!-- ═══════════════════════════ MACROS SECTION ═══════════════════════════ -->
+
+  <div id="section-macros" class="section" style="display:none;">
+    <div style="padding-top:32px;">
+      <div class="setup-title" style="font-size:34px;">MAKROER</div>
+      <div style="font-size:12px;color:#888;margin-top:5px;letter-spacing:.05em;">196 CM // 95 KG // MÅL: RECOMP</div>
+    </div>
+    <div class="macros-grid">
+      <div class="macro-card">
+        <div class="macro-card-title">TRÆNINGSDAG (4×/UGE)</div>
+        <div class="macro-row"><span class="macro-name">Kalorier</span><span class="macro-val">2.900<small> kcal</small></span></div>
+        <div class="macro-row"><span class="macro-name">Protein</span><span class="macro-val accent-text">210<small> g</small></span></div>
+        <div class="macro-row"><span class="macro-name">Kulhydrat</span><span class="macro-val">310<small> g</small></span></div>
+        <div class="macro-row"><span class="macro-name">Fedt</span><span class="macro-val">80<small> g</small></span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-card-title">HVILE / BOKSEDAG (3×/UGE)</div>
+        <div class="macro-row"><span class="macro-name">Kalorier</span><span class="macro-val">2.500<small> kcal</small></span></div>
+        <div class="macro-row"><span class="macro-name">Protein</span><span class="macro-val accent-text">210<small> g</small></span></div>
+        <div class="macro-row"><span class="macro-name">Kulhydrat</span><span class="macro-val">230<small> g</small></span></div>
+        <div class="macro-row"><span class="macro-name">Fedt</span><span class="macro-val">75<small> g</small></span></div>
+      </div>
+    </div>
+    <div class="rule-box">
+      <div class="rule-box-label">REGEL #1</div>
+      <div class="rule-box-title">Protein ≥200g/dag er non-negotiable.</div>
+      <div class="rule-box-sub">Har du ramt proteinet? Resten passer sig selv.</div>
+    </div>
+
+```
+<div class="section-title">DAGLIG MADPLAN</div>
+<table class="food-table">
+  <thead><tr><th>MÅLTID</th><th>MAD</th><th>KCAL</th><th>PROTEIN</th></tr></thead>
+  <tbody>
+    <tr><td><div class="food-meal">Morgenmad</div></td><td><div class="food-desc">500g kvark + 50g havregryn + banan</div></td><td><div class="food-num accent-text">550</div></td><td><div class="food-num green-text">55g</div></td></tr>
+    <tr><td><div class="food-meal">Frokost</div></td><td><div class="food-desc">200g kyllingebryst + 150g ris (kogt) + grøntsager</div></td><td><div class="food-num accent-text">650</div></td><td><div class="food-num green-text">48g</div></td></tr>
+    <tr><td><div class="food-meal">Pre-workout</div></td><td><div class="food-desc">2 skiver rugbrød + 100g tun + æble</div></td><td><div class="food-num accent-text">400</div></td><td><div class="food-num green-text">30g</div></td></tr>
+    <tr><td><div class="food-meal">Aftensmad</div></td><td><div class="food-desc">200g laks + 200g søde kartofler + broccoli</div></td><td><div class="food-num accent-text">650</div></td><td><div class="food-num green-text">42g</div></td></tr>
+    <tr><td><div class="food-meal">Aften-snack</div></td><td><div class="food-desc">Proteinshake (30g) + 30g peanutbutter</div></td><td><div class="food-num accent-text">350</div></td><td><div class="food-num green-text">35g</div></td></tr>
+    <tr style="background:#111;"><td><strong>TOTAL</strong></td><td></td><td><div class="food-num" style="color:#fff;">~2.600</div></td><td><div class="food-num green-text" style="font-size:22px;">~210g</div></td></tr>
+  </tbody>
+</table>
+<div style="font-size:11px;color:#888;margin-top:10px;">+ 1–2 ekstra skiver rugbrød + lidt olie på træningsdage = ~2.900 kcal</div>
+
+<div class="section-title">5 PROTEIN HACKS</div>
+<div class="hack-row"><div class="hack-num">1</div><div><div class="hack-name">Kvark 500g</div><div class="hack-tip">50g protein — klar til brug. Nul forberedelse.</div></div></div>
+<div class="hack-row"><div class="hack-num">2</div><div><div class="hack-name">Færdigstegt kylling</div><div class="hack-tip">Køb det. Spis det. 46g/200g.</div></div></div>
+<div class="hack-row"><div class="hack-num">3</div><div><div class="hack-name">Tun på dåse ×2</div><div class="hack-tip">40g protein. 5 sekunder.</div></div></div>
+<div class="hack-row"><div class="hack-num">4</div><div><div class="hack-name">Proteinshake</div><div class="hack-tip">30g protein. 2 minutter.</div></div></div>
+<div class="hack-row"><div class="hack-num">5</div><div><div class="hack-name">4 kogte æg</div><div class="hack-tip">24g protein. 12 min i microovn.</div></div></div>
+```
+
+  </div>
+
+  <!-- ═══════════════════════════ PROGRESS SECTION ═══════════════════════ -->
+
+  <div id="section-progress" class="section" style="display:none;">
+    <div style="padding-top:32px;">
+      <div class="setup-title" style="font-size:34px;">FREMSKRIDT</div>
+      <div class="header-tagline" id="progress-sub" style="margin-top:5px;"></div>
+    </div>
+
+```
+<div class="stats-row" id="stats-row"></div>
+
+<div class="section-title">1-MILE RUN LOG</div>
+<table class="progress-table" id="run-log-table">
+  <thead><tr><th>UGE</th><th>TID</th><th>NOTER</th></tr></thead>
+  <tbody id="run-log-body"></tbody>
+</table>
+
+<div class="section-title" style="margin-top:32px;">100 PUSH-UPS LOG</div>
+<table class="progress-table">
+  <thead><tr><th>UGE</th><th>TID</th><th>NOTER</th></tr></thead>
+  <tbody id="pushup-log-body"></tbody>
+</table>
+
+<div class="section-title" style="margin-top:32px;">7-UGERS ROADMAP</div>
+<div class="roadmap-row"><div class="roadmap-week"><div class="roadmap-wlabel">UGE 1</div><div class="roadmap-date">10–18. maj</div></div><div><div class="roadmap-title">DELOAD</div><div class="roadmap-desc">Restituér efter marathon. Ingen tung træning.</div></div></div>
+<div class="roadmap-row"><div class="roadmap-week"><div class="roadmap-wlabel">UGE 2–3</div><div class="roadmap-date">19. maj – 1. juni</div></div><div><div class="roadmap-title">BLaB UGE 1–2</div><div class="roadmap-desc">Volumen opbygning. Find dine arbejdsvægte.</div></div></div>
+<div class="roadmap-row"><div class="roadmap-week"><div class="roadmap-wlabel">UGE 4–5</div><div class="roadmap-date">2–15. juni</div></div><div><div class="roadmap-title">BLaB UGE 3–4</div><div class="roadmap-desc">Progressiv overload. Intensitet stiger.</div></div></div>
+<div class="roadmap-row"><div class="roadmap-week"><div class="roadmap-wlabel">UGE 6–7</div><div class="roadmap-date">16. juni – 1. juli</div></div><div><div class="roadmap-title">BLaB UGE 5–6</div><div class="roadmap-desc">Toppræstation. Definition. Roskilde klar.</div></div></div>
+
+<div class="rm-update-box">
+  <div class="rm-update-label">OPDATÉR DINE 1RM</div>
+  <div class="rm-update-grid">
+    <div class="rm-field"><div class="rm-field-label">BENCH PRESS</div><input class="log-input" id="rm-bench" type="number" placeholder="kg" oninput="updateRM('bench',this.value)"></div>
+    <div class="rm-field"><div class="rm-field-label">TRAP BAR DL</div><input class="log-input" id="rm-tbdl" type="number" placeholder="kg" oninput="updateRM('tbdl',this.value)"></div>
+    <div class="rm-field"><div class="rm-field-label">CHIN-UP MAX</div><input class="log-input" id="rm-chin" type="number" placeholder="reps" oninput="updateRM('chin',this.value)"></div>
+  </div>
+</div>
+
+<div class="data-btns">
+  <button class="data-btn" onclick="exportData()">↓ EKSPORTÉR DATA</button>
+  <button class="data-btn" onclick="document.getElementById('import-file').click()">↑ IMPORTÉR DATA</button>
+  <button class="data-btn danger" onclick="resetData()">✕ RESET ALT</button>
+  <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)">
+</div>
+```
+
+  </div>
+
+</div><!-- end .main -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const DELOAD_WEEKS = [5, 10];
+const PROGRAM = {
+  dag1: {
+    label:"DAG 1", title:"UPPER BODY", day:"Mandag", color:"#C4A86B",
+    exercises:[
+      {id:"bench",   name:"Bench Press",            type:"bench",  sets:"72.5% × 8 / 77.5% × 6 / 82.5% × 4+",         notes:"3–5 min hvil. 3. sæt: så mange reps som muligt."},
+      {id:"flatdb",  name:"Flat DB Press",           type:"free",   sets:"2 × Max Reps",                                 notes:"Vælg vægt til ~20–25 reps sæt 1. Samme vægt begge sæt."},
+      {id:"cablerow",name:"Cable Rows (overhand)",   type:"free",   sets:"4 × 15",                                       notes:"Superset 3a/3b: rows → pushdowns uden hvil imellem"},
+      {id:"tricepspd",name:"Triceps Pushdowns",      type:"free",   sets:"4 × 15",                                       notes:"Superset med rows"},
+      {id:"dbshrug", name:"DB Shrugs (2 sek hold)",  type:"free",   sets:"3 × 15",                                       notes:"Superset 4a/4b"},
+      {id:"lateral", name:"DB Lateral Raises",       type:"free",   sets:"3 × 15",                                       notes:"Superset med shrugs"},
+      {id:"complex1",name:"Barbell Complex",         type:"free",   sets:"2 × 10 reps/øvelse. Hvil 90 sek.",            notes:"DL → Bent Row → Hang Clean → Push Press → Back Squat"},
+    ]
+  },
+  dag2: {
+    label:"DAG 2", title:"LOWER BODY", day:"Onsdag", color:"#8888FF",
+    exercises:[
+      {id:"sqjump",  name:"DB Squat Jumps (10 lb)",  type:"free",   sets:"4 × 6",                                        notes:"Eksplosiv — fuld reset mellem hvert hop"},
+      {id:"tbdl",    name:"Trap Bar Deadlift",        type:"tbdl",   sets:"72.5% × 8 / 77.5% × 6 / 82.5% × 4",          notes:"Notér reps på 3. sæt. Uge 1–5: hold dig til skemaet."},
+      {id:"backraise",name:"45° Back Raises",         type:"free",   sets:"3 × 15",                                       notes:"Hold vægtskive over bryst. Superset 3a/3b"},
+      {id:"mbtwist", name:"Seated MB Twists",         type:"free",   sets:"3 × 20/side",                                  notes:"Fødder løftet fra gulvet"},
+      {id:"milerun", name:"Timed 1-Mile Run",         type:"time",   sets:"1 × så hurtigt som muligt",                   notes:"Notér din tid. Beat det næste uge."},
+    ]
+  },
+  dag3: {
+    label:"DAG 3", title:"UPPER BODY", day:"Fredag", color:"#C4A86B",
+    exercises:[
+      {id:"chinup",  name:"Chin-ups (total reps)",    type:"chinup", sets:"Max + 50%",                                    notes:"Del op i sæt som du vil. Ingen krav til sæt-struktur."},
+      {id:"pulldown",name:"Lat Pulldowns (wide)",     type:"free",   sets:"2 × Max Reps",                                 notes:"20–25 reps sæt 1 / 10–20 sæt 2. Superset 2a/2b"},
+      {id:"dbmilpress",name:"DB Military Press",      type:"free",   sets:"2 × Max Reps",                                 notes:"15–20 reps sæt 1 / 10–15 sæt 2"},
+      {id:"rolltri", name:"Rolling Triceps Extensions",type:"free",  sets:"4 × 8",                                        notes:"Superset 3a/3b"},
+      {id:"hammer",  name:"Hammer Curls",             type:"free",   sets:"4 × 8",                                        notes:"Superset med triceps"},
+      {id:"core3",   name:"Core Circuit × 2",         type:"free",   sets:"Toe Touch ×20 / Bicycle ×30 / Side Plank 30s",notes:""},
+      {id:"push100", name:"100 Push-ups",             type:"time",   sets:"1 sæt — notér tid",                           notes:"Beat din tid hver uge."},
+    ]
+  },
+  dag4: {
+    label:"DAG 4", title:"POWER + ATHLETIC", day:"Lørdag", color:"#E05252",
+    exercises:[
+      {id:"pclean",  name:"Power Clean",              type:"free",   sets:"5 × 3",                                        notes:"60–70% — eksplosivitet > vægt. Fuld reset mellem reps."},
+      {id:"hpclean", name:"Hang Power Clean",         type:"free",   sets:"3 × 3",                                        notes:"Fra knæhøjde"},
+      {id:"boxjump", name:"Box Jump",                 type:"free",   sets:"3 × 4",                                        notes:"Maks højde. Stig ned — ingen hop ned."},
+      {id:"dbrdl",   name:"DB RDL",                   type:"free",   sets:"3 × 10",                                       notes:"Superset med Copenhagen Plank"},
+      {id:"copen",   name:"Copenhagen Plank",         type:"free",   sets:"3 × 20 sek/side",                              notes:"Superset med RDL"},
+      {id:"pcomplex",name:"Barbell Complex (finisher)",type:"free",  sets:"3 runder",                                     notes:"DL → Bent Row → Hang Clean → Push Press"},
+    ]
+  }
+};
+
+const BENCH_SCHEMES = {
+  1:[[.725,8],[.775,6],[.825,"4+"]], 2:[[.75,7],[.80,5],[.85,"3+"]],
+  3:[[.775,6],[.825,4],[.90,"2+"]], 4:[[.80,5],[.85,3],[.95,"1+"]],
+  5:[[.50,5],[.60,5]], 6:[[.725,8],[.775,6],[.825,"4+"]],
+  7:[[.75,7],[.80,5],[.85,"3+"]], 8:[[.775,6],[.825,4],[.90,"2+"]],
+  9:[[.80,5],[.85,3],[.95,"1+"]], 10:[[.50,5],[.60,5]],
+  11:[[.80,4],[.875,2],[.925,1],[.975,1]], 12:"maxtest"
+};
+const TBDL_SCHEMES = {
+  1:[[.725,8],[.775,6],[.825,4]], 2:[[.75,7],[.80,5],[.85,3]],
+  3:[[.775,6],[.825,4],[.90,2]], 4:[[.80,5],[.85,3],[.95,1]],
+  5:[[.50,5],[.60,5]], 6:[[.725,8],[.775,6],[.825,"4+"]],
+  7:[[.75,7],[.80,5],[.85,"3+"]], 8:[[.775,6],[.825,4],[.90,"2+"]],
+  9:[[.80,5],[.85,3],[.95,"1+"]], 10:[[.50,5],[.60,5]],
+  11:[[.80,4],[.875,2],[.925,1],[.975,1]], 12:[[.80,5],[.85,3]]
+};
+const CHIN_PCT = {1:50,2:50,3:60,4:60,5:50,6:60,7:60,8:70,9:70,10:50,11:80,12:100};
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  setupDone: false,
+  benchRM: 0, tbdlRM: 0, chinMax: 0,
+  currentWeek: 1, currentDay: "dag1",
+  logs: {}, checked: {}, completed: {}
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem("blab_v3");
+    if (s) state = {...state, ...JSON.parse(s)};
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem("blab_v3", JSON.stringify(state)); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  if (state.setupDone) {
+    showApp();
+  }
+});
+
+function doSetup() {
+  const b = parseFloat(document.getElementById("s-bench").value) || 0;
+  const t = parseFloat(document.getElementById("s-tbdl").value) || 0;
+  const c = parseFloat(document.getElementById("s-chin").value) || 0;
+  if (!b && !t && !c) { alert("Indtast mindst ét tal for at starte."); return; }
+  state.benchRM = b; state.tbdlRM = t; state.chinMax = c;
+  state.setupDone = true;
+  saveState();
+  showApp();
+}
+
+function showApp() {
+  document.getElementById("setup-screen").style.display = "none";
+  switchTab("train");
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════
+let currentTab = "train";
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".nav-tab").forEach((el,i) => {
+    el.classList.toggle("active", ["train","macros","progress"][i] === tab);
+  });
+  document.querySelectorAll(".section").forEach(el => el.style.display = "none");
+  document.getElementById("section-" + tab).style.display = "block";
+  if (tab === "train") renderTraining();
+  if (tab === "progress") renderProgress();
+}
+
+// ═══════════════════════════════════════════════════════
+// TRAINING
+// ═══════════════════════════════════════════════════════
+function renderTraining() {
+  renderWeekBar();
+  renderDayCards();
+  renderSession();
+  updateHeaderTagline();
+}
+
+function renderWeekBar() {
+  const bar = document.getElementById("week-bar");
+  bar.innerHTML = "";
+  for (let w = 1; w <= 12; w++) {
+    const isDeload = DELOAD_WEEKS.includes(w);
+    const isActive = w === state.currentWeek;
+    const btn = document.createElement("button");
+    btn.className = `week-btn${isActive?" active":""}${isDeload?" deload":""}`;
+    btn.textContent = isDeload ? `UGE ${w} ⟳` : `UGE ${w}`;
+    btn.onclick = () => { state.currentWeek = w; saveState(); renderTraining(); };
+    bar.appendChild(btn);
+  }
+  // scroll active into view
+  const active = bar.querySelector(".active");
+  if (active) active.scrollIntoView({inline:"center", behavior:"smooth"});
+}
+
+function renderDayCards() {
+  const sel = document.getElementById("day-selector");
+  sel.innerHTML = "";
+  Object.entries(PROGRAM).forEach(([key, day]) => {
+    const skey = `w${state.currentWeek}_${key}`;
+    const done = state.completed[skey];
+    const active = key === state.currentDay;
+    const div = document.createElement("div");
+    div.className = `day-card${active?" active":""}${done?" completed":""}`;
+    div.style.setProperty("--day-color", day.color);
+    div.innerHTML = `
+      <div class="day-card-label">${day.label}</div>
+      <div class="day-card-title" style="color:${day.color}">${day.title}</div>
+      <div class="day-card-day">${day.day}</div>`;
+    div.onclick = () => { state.currentDay = key; saveState(); renderTraining(); };
+    sel.appendChild(div);
+  });
+}
+
+function renderSession() {
+  const w = state.currentWeek;
+  const dayKey = state.currentDay;
+  const day = PROGRAM[dayKey];
+  const skey = `w${w}_${dayKey}`;
+
+  // deload banner
+  document.getElementById("deload-banner").style.display = DELOAD_WEEKS.includes(w) ? "flex" : "none";
+
+  // header
+  document.getElementById("session-label").textContent = `UGE ${w} // ${day.day.toUpperCase()}`;
+  document.getElementById("session-day-label").textContent = day.label;
+  document.getElementById("session-day-label").style.color = day.color;
+  document.getElementById("session-title").childNodes[2] && (document.getElementById("session-title").childNodes[2].textContent = " " + day.title);
+  // full title
+  document.getElementById("session-title").innerHTML = `<span style="color:${day.color}">${day.label}</span> ${day.title}`;
+
+  // exercises
+  const list = document.getElementById("exercise-list");
+  list.innerHTML = "";
+  day.exercises.forEach((ex, idx) => {
+    list.appendChild(buildExerciseCard(ex, idx, w, skey));
+  });
+
+  // complete btn
+  const btn = document.getElementById("complete-btn");
+  const isDone = state.completed[skey];
+  btn.textContent = isDone ? "✓ SESSION FULDFØRT" : "MARKER SESSION SOM FÆRDIG";
+  btn.className = `complete-session-btn${isDone?" done":""}`;
+}
+
+function buildExerciseCard(ex, idx, week, skey) {
+  const checkKey = `${skey}_${ex.id}`;
+  const logKey = `${skey}_${ex.id}_log`;
+  const noteKey = `${skey}_${ex.id}_note`;
+  const isDone = state.checked[checkKey];
+
+  const card = document.createElement("div");
+  card.className = `exercise-card${isDone?" done":""}`;
+  card.id = `excard-${checkKey}`;
+
+  // header
+  const header = document.createElement("div");
+  header.className = "exercise-header";
+  header.innerHTML = `
+    <div class="exercise-num">${String(idx+1).padStart(2,"0")}</div>
+    <div class="exercise-info">
+      <div class="exercise-name">${ex.name}</div>
+      <div class="exercise-sets-label">${ex.sets}</div>
+    </div>
+    <span class="expand-arrow">▾</span>
+    <div class="exercise-check${isDone?" checked":"}" id="chk-${checkKey}" onclick="toggleCheck(event,'${checkKey}')">
+      ${isDone?'<span style="color:#000;font-size:11px;font-weight:700;">✓</span>':""}
+    </div>`;
+
+  // body
+  const body = document.createElement("div");
+  body.className = "exercise-body";
+  body.style.display = "none";
+
+  let bodyHTML = ex.notes ? `<div class="exercise-notes">${ex.notes}</div>` : "";
+
+  // weight sets
+  if (ex.type === "bench") {
+    bodyHTML += buildWeightSets(state.benchRM, BENCH_SCHEMES[week]);
+  } else if (ex.type === "tbdl") {
+    bodyHTML += buildWeightSets(state.tbdlRM, TBDL_SCHEMES[week]);
+  } else if (ex.type === "chinup") {
+    if (state.chinMax > 0) {
+      const pct = CHIN_PCT[week] || 50;
+      const total = Math.ceil(state.chinMax * (1 + pct/100));
+      bodyHTML += `<div class="chinup-box">
+        <div class="chinup-total">${total} <span style="font-size:16px;font-weight:400;color:#888;">total reps</span></div>
+        <div class="chinup-sub">Chin-up max (${state.chinMax}) + ${pct}% = ${total}. Del op som du vil.</div>
+      </div>`;
+    } else {
+      bodyHTML += `<div class="no-rm">Indtast chin-up max i Log → Opdatér 1RM</div>`;
+    }
+  }
+
+  // time input
+  if (ex.type === "time") {
+    bodyHTML += `<div class="log-row">
+      <div class="log-label">TID:</div>
+      <input class="log-input" placeholder="f.eks. 7:42" value="${state.logs[logKey]||""}"
+        oninput="saveLog('${logKey}',this.value)">
+    </div>`;
+  }
+
+  // note input
+  bodyHTML += `<div class="log-row" style="margin-top:8px;">
+    <div class="log-label">NOTER:</div>
+    <input class="log-input" placeholder="Vægt, reps, følelse..." value="${state.logs[noteKey]||""}"
+      oninput="saveLog('${noteKey}',this.value)">
+  </div>`;
+
+  body.innerHTML = bodyHTML;
+
+  // toggle expand
+  header.addEventListener("click", (e) => {
+    if (e.target.closest(".exercise-check")) return;
+    const isOpen = body.style.display === "block";
+    body.style.display = isOpen ? "none" : "block";
+    card.classList.toggle("expanded", !isOpen);
+  });
+
+  card.appendChild(header);
+  card.appendChild(body);
+  return card;
+}
+
+function buildWeightSets(rm, scheme) {
+  if (!rm || !scheme || scheme === "maxtest") {
+    return `<div class="no-rm">${!rm ? "Indtast 1RM i Opsætning" : "Uge 12: Max-rep test"}</div>`;
+  }
+  let html = `<div class="weight-sets">`;
+  scheme.forEach(([pct, reps]) => {
+    const kg = Math.round(rm * pct / 2.5) * 2.5;
+    html += `<div class="weight-set-card">
+      <div class="weight-set-pct">${Math.round(pct*100)}%</div>
+      <div class="weight-set-kg">${kg}<span class="weight-set-kg-unit"> kg</span></div>
+      <div class="weight-set-reps">× ${reps} reps</div>
+    </div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function toggleCheck(e, key) {
+  e.stopPropagation();
+  state.checked[key] = !state.checked[key];
+  saveState();
+  const card = document.getElementById(`excard-${key}`);
+  const chk = document.getElementById(`chk-${key}`);
+  if (card) card.classList.toggle("done", state.checked[key]);
+  if (chk) {
+    chk.classList.toggle("checked", state.checked[key]);
+    chk.innerHTML = state.checked[key] ? '<span style="color:#000;font-size:11px;font-weight:700;">✓</span>' : "";
+  }
+}
+
+function saveLog(key, val) {
+  state.logs[key] = val;
+  saveState();
+}
+
+function completeSession() {
+  const skey = `w${state.currentWeek}_${state.currentDay}`;
+  state.completed[skey] = true;
+  saveState();
+  const btn = document.getElementById("complete-btn");
+  btn.textContent = "✓ SESSION FULDFØRT";
+  btn.classList.add("done");
+  renderDayCards();
+  updateHeaderTagline();
+}
+
+function updateHeaderTagline() {
+  const total = Object.keys(state.completed).length;
+  document.getElementById("header-tagline").textContent = `DEFRANCOS TRAINING SYSTEMS // ${total}/48 SESSIONS DONE`;
+}
+
+// ═══════════════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════════════
+function renderProgress() {
+  // sub header
+  document.getElementById("progress-sub").textContent =
+    `BENCH: ${state.benchRM||"—"} KG // TBDL: ${state.tbdlRM||"—"} KG // CHIN-UP MAX: ${state.chinMax||"—"} REPS`;
+
+  // stats
+  const total = Object.keys(state.completed).length;
+  const powDays = Object.keys(state.completed).filter(k => k.includes("dag4")).length;
+  document.getElementById("stats-row").innerHTML = `
+    <div class="stat-card"><div class="stat-label">SESSIONER</div><div class="stat-val">${total}/48</div></div>
+    <div class="stat-card"><div class="stat-label">UGE</div><div class="stat-val">${Math.min(state.currentWeek,12)}/12</div></div>
+    <div class="stat-card"><div class="stat-label">POWER DAGE</div><div class="stat-val">${powDays}/12</div></div>
+  `;
+
+  // run log
+  const runBody = document.getElementById("run-log-body");
+  runBody.innerHTML = "";
+  for (let w = 1; w <= 12; w++) {
+    if (DELOAD_WEEKS.includes(w)) continue;
+    const tKey = `w${w}_dag2_milerun_log`;
+    const nKey = `w${w}_dag2_milerun_log_note`;
+    const time = state.logs[tKey] || "";
+    const note = state.logs[nKey] || "";
+    runBody.innerHTML += `<tr>
+      <td class="td-week">Uge ${w}</td>
+      <td class="td-time" style="color:${time?"#C4A86B":"#333"}">${time||"—"}</td>
+      <td class="td-note">${note}</td>
+    </tr>`;
+  }
+
+  // pushup log
+  const puBody = document.getElementById("pushup-log-body");
+  puBody.innerHTML = "";
+  for (let w = 1; w <= 12; w++) {
+    if (DELOAD_WEEKS.includes(w)) continue;
+    const tKey = `w${w}_dag3_push100_log`;
+    const nKey = `w${w}_dag3_push100_note`;
+    const time = state.logs[tKey] || "";
+    puBody.innerHTML += `<tr>
+      <td class="td-week">Uge ${w}</td>
+      <td class="td-time" style="color:${time?"#C4A86B":"#333"}">${time||"—"}</td>
+      <td class="td-note">${state.logs[nKey]||""}</td>
+    </tr>`;
+  }
+
+  // rm inputs
+  document.getElementById("rm-bench").value = state.benchRM || "";
+  document.getElementById("rm-tbdl").value = state.tbdlRM || "";
+  document.getElementById("rm-chin").value = state.chinMax || "";
+}
+
+function updateRM(field, val) {
+  const n = parseFloat(val) || 0;
+  if (field === "bench") state.benchRM = n;
+  if (field === "tbdl") state.tbdlRM = n;
+  if (field === "chin") state.chinMax = n;
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT / IMPORT / RESET
+// ═══════════════════════════════════════════════════════
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "blab-backup-" + new Date().toISOString().slice(0,10) + ".json";
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      state = {...state, ...d};
+      saveState();
+      if (state.setupDone) showApp();
+      renderProgress();
+      alert("Data importeret.");
+    } catch(err) { alert("Fejl: Ugyldigt JSON-format."); }
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if (confirm("Er du sikker? Alle data slettes permanent.")) {
+    localStorage.removeItem("blab_v3");
+    state = { setupDone:false, benchRM:0, tbdlRM:0, chinMax:0, currentWeek:1, currentDay:"dag1", logs:{}, checked:{}, completed:{} };
+    document.getElementById("setup-screen").style.display = "block";
+    document.querySelectorAll(".section").forEach(el => el.style.display = "none");
+    document.querySelectorAll(".nav-tab").forEach((el,i) => el.classList.toggle("active", i===0));
+  }
+}
+</script>
+
+</body>
+</html>
