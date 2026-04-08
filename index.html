@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUILT LIKE A BADASS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080808;color:#fff;font-family:'Barlow',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+.header{padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:100;background:rgba(8,8,8,0.96);backdrop-filter:blur(12px)}
+.hbrand{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:0.12em}
+.hbrand span{color:#C4A86B}
+.htag{font-size:10px;letter-spacing:0.2em;color:#888;margin-top:2px}
+.ntabs{display:flex;gap:2px;background:#111;border:1px solid rgba(255,255,255,0.08);padding:3px;border-radius:3px}
+.ntab{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;padding:7px 16px;cursor:pointer;border-radius:2px;border:none;background:transparent;color:#888;transition:all 0.15s}
+.ntab.on{background:#C4A86B;color:#000}
+.ntab:hover:not(.on){color:#fff;background:#161616}
+.main{padding:0 28px 80px;max-width:920px;margin:0 auto}
+.sec{display:none}
+/* SETUP */
+.setup{padding:44px 0}
+.bigtitle{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;letter-spacing:0.06em;line-height:1;margin-bottom:6px}
+.sub{color:#888;font-size:13px;margin-bottom:40px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:520px}
+.sfield{display:flex;flex-direction:column;gap:7px}
+.slabel{font-size:10px;letter-spacing:0.2em;color:#888;text-transform:uppercase}
+.sinput{background:#111;border:1px solid rgba(255,255,255,0.08);color:#fff;font-family:'Barlow',sans-serif;font-size:22px;font-weight:600;padding:13px 14px;border-radius:2px;width:100%;transition:border-color 0.15s}
+.sinput:focus{outline:none;border-color:#C4A86B}
+.sinput::placeholder{color:#333;font-size:18px}
+.sunit{font-size:12px;color:#888}
+.gbtn{background:#C4A86B;color:#000;border:none;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.15em;padding:15px 44px;cursor:pointer;transition:background 0.15s;margin-top:36px}
+.gbtn:hover{background:#D4B87B}
+/* WEEK BAR */
+.wbar{display:flex;gap:5px;padding:20px 0 16px;overflow-x:auto;scrollbar-width:none}
+.wbar::-webkit-scrollbar{display:none}
+.wbtn{flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:7px 12px;border-radius:2px;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#888;transition:all 0.15s;white-space:nowrap}
+.wbtn.on{background:#C4A86B;color:#000;border-color:#C4A86B}
+.wbtn.dl{border-color:#333;color:#555}
+.wbtn.dl.on{background:#444;color:#fff;border-color:#444}
+.wbtn:hover:not(.on){border-color:#444;color:#fff}
+/* DAY CARDS */
+.dcards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.dcard{border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:14px;cursor:pointer;background:#111;position:relative;overflow:hidden;transition:all 0.15s}
+.dcard:hover{background:#161616;border-color:#333}
+.dcard.on{background:rgba(255,255,255,0.03)}
+.dcard.done::after{content:'✓';position:absolute;top:10px;right:10px;font-size:11px;color:#52C77A}
+.dcardlabel{font-size:10px;letter-spacing:0.18em;color:#888;margin-bottom:3px}
+.dcardtitle{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.06em}
+.dcardday{font-size:11px;color:#888;margin-top:3px}
+/* SESSION */
+.shead{margin-bottom:24px}
+.slbl{font-size:10px;letter-spacing:0.2em;color:#888;margin-bottom:5px}
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;letter-spacing:0.06em;line-height:1}
+/* EXERCISES */
+.exlist{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.excard{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.excard.done{border-color:rgba(82,199,122,0.3)}
+.exhader{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer}
+.exnum{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#333;min-width:22px}
+.exinfo{flex:1}
+.exname{font-size:14px;font-weight:600}
+.exsets{font-size:11px;color:#888;margin-top:2px}
+.excheck{width:20px;height:20px;border-radius:2px;border:1px solid rgba(255,255,255,0.15);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.excheck.on{background:#52C77A;border-color:#52C77A}
+.exarrow{font-size:10px;color:#555;transition:transform 0.15s;margin-left:8px;flex-shrink:0}
+.excard.open .exarrow{transform:rotate(180deg)}
+.exbody{padding:0 18px 14px 54px;display:none}
+.excard.open .exbody{display:block}
+.exnotes{font-size:11px;color:#888;margin-bottom:10px;font-style:italic;line-height:1.5}
+/* WEIGHT SETS */
+.wsets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.wset{background:#080808;border:1px solid rgba(255,255,255,0.08);border-radius:2px;padding:9px 12px;min-width:90px}
+.wsetpct{font-size:10px;letter-spacing:0.1em;color:#888;margin-bottom:3px}
+.wsetkg{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:#C4A86B;line-height:1}
+.wsetreps{font-size:11px;color:#888;margin-top:2px}
+.nrm{font-size:12px;color:#555;padding:6px 0}
+/* CHIN-UP */
+.chinbox{background:rgba(196,168,107,0.12);border:1px solid rgba(196,168,107,0.2);border-radius:2px;padding:12px 14px;margin-bottom:10px}
+.chintot{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:#C4A86B;line-height:1}
+.chinsub{font-size:11px;color:#888;margin-top:3px}
+/* LOG */
+.logrow{display:flex;gap:8px;align-items:center;margin-top:8px}
+.loglbl{font-size:10px;letter-spacing:0.15em;color:#888;min-width:55px}
+.loginput{background:#080808;border:1px solid rgba(255,255,255,0.08);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;padding:7px 10px;border-radius:2px;flex:1}
+.loginput:focus{outline:none;border-color:#C4A86B}
+/* COMPLETE */
+.compbtn{width:100%;padding:16px;background:transparent;border:1px solid #52C77A;color:#52C77A;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.15em;cursor:pointer;transition:all 0.15s}
+.compbtn:hover,.compbtn.on{background:#52C77A;color:#000}
+/* DELOAD */
+.dlbanner{background:rgba(85,85,85,0.12);border:1px solid #2a2a2a;border-radius:3px;padding:18px 20px;margin:12px 0 20px;display:flex;gap:14px;align-items:flex-start}
+.dltitle{font-weight:600;font-size:14px;margin-bottom:4px}
+.dlbody{font-size:12px;color:#888;line-height:1.6}
+/* MACROS */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+.mcard{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:20px}
+.mctitle{font-size:10px;letter-spacing:0.18em;color:#888;margin-bottom:16px;text-transform:uppercase}
+.mrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.mrow:last-child{border-bottom:none}
+.mname{font-size:12px;color:#888}
+.mval{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1}
+.mval small{font-size:12px;color:#888;font-weight:400}
+.acc{color:#C4A86B}
+.grn{color:#52C77A}
+.rulebox{margin-top:20px;padding:14px 18px;background:rgba(196,168,107,0.1);border:1px solid rgba(196,168,107,0.2);border-radius:3px}
+.rblabel{font-size:10px;letter-spacing:0.18em;color:#C4A86B;margin-bottom:5px}
+.rbtitle{font-size:14px;font-weight:600}
+.rbsub{font-size:12px;color:#888;margin-top:3px;line-height:1.6}
+.sectitle{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:0.06em;margin:28px 0 14px}
+.ftable{width:100%;border-collapse:collapse}
+.ftable th{font-size:10px;letter-spacing:0.15em;color:#888;text-align:left;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ftable td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top}
+.ftable tr:last-child td{border-bottom:none}
+.fmeal{font-weight:600;font-size:13px}
+.fdesc{color:#888;font-size:12px;margin-top:2px;line-height:1.5}
+.fnum{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.hackrow{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.hackn{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#C4A86B;min-width:22px}
+.hackname{font-weight:600;font-size:13px}
+.hacktip{font-size:12px;color:#888;margin-top:2px}
+/* PROGRESS */
+.statsrow{display:flex;gap:12px;margin-top:24px;margin-bottom:28px;flex-wrap:wrap}
+.statcard{flex:1;min-width:100px;background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:18px 14px}
+.statlabel{font-size:10px;letter-spacing:0.16em;color:#888;margin-bottom:6px}
+.statval{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#C4A86B}
+.ptable{width:100%;border-collapse:collapse}
+.ptable th{font-size:10px;letter-spacing:0.15em;color:#888;text-align:left;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ptable td{padding:11px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ptable tr:last-child td{border-bottom:none}
+.twk{color:#888}
+.ttm{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.rmbox{margin-top:36px;padding:18px;background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:3px}
+.rmlabel{font-size:10px;letter-spacing:0.18em;color:#888;margin-bottom:12px}
+.rmgrid{display:flex;gap:10px;flex-wrap:wrap}
+.rmfield{flex:1;min-width:130px}
+.rmflabel{font-size:10px;letter-spacing:0.15em;color:#888;margin-bottom:5px}
+.roadrow{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.roadwk{min-width:65px}
+.roadwlbl{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#C4A86B;letter-spacing:0.1em}
+.roaddate{font-size:10px;color:#444;margin-top:2px}
+.roadtitle{font-weight:600;font-size:14px}
+.roaddesc{font-size:12px;color:#888;margin-top:3px;line-height:1.5}
+.databtns{display:flex;gap:10px;margin-top:36px;flex-wrap:wrap}
+.dbtn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;padding:10px 20px;border-radius:2px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#888;transition:all 0.15s}
+.dbtn:hover{color:#fff;border-color:#fff}
+.dbtn.red{border-color:rgba(224,82,82,0.4);color:#E05252}
+.dbtn.red:hover{background:#E05252;color:#000}
+@media(max-width:600px){
+  .header{padding:14px 16px}
+  .main{padding:0 16px 80px}
+  .sgrid{grid-template-columns:1fr}
+  .dcards{grid-template-columns:1fr 1fr}
+  .mgrid{grid-template-columns:1fr}
+  .stitle{font-size:28px}
+  .bigtitle{font-size:34px}
+  .ntab{padding:7px 10px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="hbrand">BUILT LIKE A <span>BADASS</span></div>
+    <div class="htag" id="htag">DEFRANCOS TRAINING SYSTEMS // 12-WEEK BLUEPRINT</div>
+  </div>
+  <div class="ntabs">
+    <button class="ntab on" id="tb0">TRAENING</button>
+    <button class="ntab" id="tb1">MAKROER</button>
+    <button class="ntab" id="tb2">LOG</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- SETUP -->
+
+<div id="setup" class="setup">
+  <div class="bigtitle">OPSAETNING</div>
+  <div class="sub">TRIN 01 // DINE 1RM MAXES - VAER AERLIG. ESTIMER LAVT.</div>
+  <div class="sgrid">
+    <div class="sfield">
+      <div class="slabel">Bench Press 1RM</div>
+      <input class="sinput" id="sb" type="number" placeholder="100">
+      <div class="sunit">kg - sand max</div>
+    </div>
+    <div class="sfield">
+      <div class="slabel">Trap Bar Deadlift 1RM</div>
+      <input class="sinput" id="st" type="number" placeholder="160">
+      <div class="sunit">kg - sand max</div>
+    </div>
+    <div class="sfield">
+      <div class="slabel">Chin-up Max Reps</div>
+      <input class="sinput" id="sc" type="number" placeholder="12">
+      <div class="sunit">reps - et saet, ingen stop</div>
+    </div>
+  </div>
+  <button class="gbtn" id="startbtn">START PROGRAMMET</button>
+</div>
+
+<!-- TRAIN -->
+
+<div id="s0" class="sec">
+  <div class="wbar" id="wbar"></div>
+  <div id="dlbanner" class="dlbanner" style="display:none">
+    <div style="font-size:22px">&#8635;</div>
+    <div>
+      <div class="dltitle">DELOAD UGE - RESPEKTER DEN</div>
+      <div class="dlbody">50-60% paa alle primaere loeft. Ingen PRs. Steady state cardio 20-30 min paa lower body dag.</div>
+    </div>
+  </div>
+  <div class="dcards" id="dcards"></div>
+  <div class="shead">
+    <div class="slbl" id="slbl"></div>
+    <div class="stitle" id="stitle"></div>
+  </div>
+  <div class="exlist" id="exlist"></div>
+  <button class="compbtn" id="compbtn">MARKER SESSION SOM FAERDIG</button>
+</div>
+
+<!-- MACROS -->
+
+<div id="s1" class="sec">
+  <div style="padding-top:32px">
+    <div class="bigtitle" style="font-size:34px">MAKROER</div>
+    <div style="font-size:12px;color:#888;margin-top:5px">196 CM // 95 KG // MAL: RECOMP</div>
+  </div>
+  <div class="mgrid">
+    <div class="mcard">
+      <div class="mctitle">TRAENINSDAG (4x/UGE)</div>
+      <div class="mrow"><span class="mname">Kalorier</span><span class="mval">2.900<small> kcal</small></span></div>
+      <div class="mrow"><span class="mname">Protein</span><span class="mval acc">210<small> g</small></span></div>
+      <div class="mrow"><span class="mname">Kulhydrat</span><span class="mval">310<small> g</small></span></div>
+      <div class="mrow"><span class="mname">Fedt</span><span class="mval">80<small> g</small></span></div>
+    </div>
+    <div class="mcard">
+      <div class="mctitle">HVILE / BOKSEDAG (3x/UGE)</div>
+      <div class="mrow"><span class="mname">Kalorier</span><span class="mval">2.500<small> kcal</small></span></div>
+      <div class="mrow"><span class="mname">Protein</span><span class="mval acc">210<small> g</small></span></div>
+      <div class="mrow"><span class="mname">Kulhydrat</span><span class="mval">230<small> g</small></span></div>
+      <div class="mrow"><span class="mname">Fedt</span><span class="mval">75<small> g</small></span></div>
+    </div>
+  </div>
+  <div class="rulebox">
+    <div class="rblabel">REGEL 1</div>
+    <div class="rbtitle">Protein 200g+/dag er non-negotiable.</div>
+    <div class="rbsub">Har du ramt proteinet? Resten passer sig selv.</div>
+  </div>
+  <div class="sectitle">DAGLIG MADPLAN</div>
+  <table class="ftable">
+    <thead><tr><th>MALTID</th><th>MAD</th><th>KCAL</th><th>PROTEIN</th></tr></thead>
+    <tbody>
+      <tr><td><div class="fmeal">Morgenmad</div></td><td><div class="fdesc">500g kvark + 50g havregryn + banan</div></td><td><div class="fnum acc">550</div></td><td><div class="fnum grn">55g</div></td></tr>
+      <tr><td><div class="fmeal">Frokost</div></td><td><div class="fdesc">200g kyllingebryst + 150g ris + groentsager</div></td><td><div class="fnum acc">650</div></td><td><div class="fnum grn">48g</div></td></tr>
+      <tr><td><div class="fmeal">Pre-workout</div></td><td><div class="fdesc">2 skiver rugbroed + 100g tun + aeble</div></td><td><div class="fnum acc">400</div></td><td><div class="fnum grn">30g</div></td></tr>
+      <tr><td><div class="fmeal">Aftensmad</div></td><td><div class="fdesc">200g laks + 200g soede kartofler + broccoli</div></td><td><div class="fnum acc">650</div></td><td><div class="fnum grn">42g</div></td></tr>
+      <tr><td><div class="fmeal">Aften-snack</div></td><td><div class="fdesc">Proteinshake (30g) + 30g peanutbutter</div></td><td><div class="fnum acc">350</div></td><td><div class="fnum grn">35g</div></td></tr>
+      <tr style="background:#111"><td><strong>TOTAL</strong></td><td></td><td><div class="fnum" style="color:#fff">~2.600</div></td><td><div class="fnum grn" style="font-size:22px">~210g</div></td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:#888;margin-top:10px">+ 1-2 ekstra skiver rugbroed + olie paa traensdage = ~2.900 kcal</div>
+  <div class="sectitle">5 PROTEIN HACKS</div>
+  <div class="hackrow"><div class="hackn">1</div><div><div class="hackname">Kvark 500g</div><div class="hacktip">50g protein - nul forb.</div></div></div>
+  <div class="hackrow"><div class="hackn">2</div><div><div class="hackname">Faerdigstegt kylling</div><div class="hacktip">Koeb det. Spis det. 46g/200g</div></div></div>
+  <div class="hackrow"><div class="hackn">3</div><div><div class="hackname">Tun paa daase x2</div><div class="hacktip">40g protein. 5 sekunder.</div></div></div>
+  <div class="hackrow"><div class="hackn">4</div><div><div class="hackname">Proteinshake</div><div class="hacktip">30g protein. 2 minutter.</div></div></div>
+  <div class="hackrow"><div class="hackn">5</div><div><div class="hackname">4 kogte aeg</div><div class="hacktip">24g protein. 12 min i microovn.</div></div></div>
+</div>
+
+<!-- LOG -->
+
+<div id="s2" class="sec">
+  <div style="padding-top:32px">
+    <div class="bigtitle" style="font-size:34px">FREMSKRIDT</div>
+    <div class="htag" id="psub" style="margin-top:5px"></div>
+  </div>
+  <div class="statsrow" id="statsrow"></div>
+  <div class="sectitle">1-MILE RUN LOG</div>
+  <table class="ptable"><thead><tr><th>UGE</th><th>TID</th><th>NOTER</th></tr></thead><tbody id="runlog"></tbody></table>
+  <div class="sectitle" style="margin-top:32px">100 PUSH-UPS LOG</div>
+  <table class="ptable"><thead><tr><th>UGE</th><th>TID</th><th>NOTER</th></tr></thead><tbody id="pulog"></tbody></table>
+  <div class="sectitle" style="margin-top:32px">7-UGERS ROADMAP</div>
+  <div class="roadrow"><div class="roadwk"><div class="roadwlbl">UGE 1</div><div class="roaddate">10-18. maj</div></div><div><div class="roadtitle">DELOAD</div><div class="roaddesc">Restituaer efter marathon.</div></div></div>
+  <div class="roadrow"><div class="roadwk"><div class="roadwlbl">UGE 2-3</div><div class="roaddate">19. maj - 1. juni</div></div><div><div class="roadtitle">BLaB UGE 1-2</div><div class="roaddesc">Volumen opbygning.</div></div></div>
+  <div class="roadrow"><div class="roadwk"><div class="roadwlbl">UGE 4-5</div><div class="roaddate">2-15. juni</div></div><div><div class="roadtitle">BLaB UGE 3-4</div><div class="roaddesc">Progressiv overload.</div></div></div>
+  <div class="roadrow"><div class="roadwk"><div class="roadwlbl">UGE 6-7</div><div class="roaddate">16. juni - 1. juli</div></div><div><div class="roadtitle">BLaB UGE 5-6</div><div class="roaddesc">Topprastation. Roskilde klar.</div></div></div>
+  <div class="rmbox">
+    <div class="rmlabel">OPDATER DINE 1RM</div>
+    <div class="rmgrid">
+      <div class="rmfield"><div class="rmflabel">BENCH PRESS</div><input class="loginput" id="rb" type="number" placeholder="kg"></div>
+      <div class="rmfield"><div class="rmflabel">TRAP BAR DL</div><input class="loginput" id="rt" type="number" placeholder="kg"></div>
+      <div class="rmfield"><div class="rmflabel">CHIN-UP MAX</div><input class="loginput" id="rc" type="number" placeholder="reps"></div>
+    </div>
+    <button class="gbtn" id="rmsave" style="margin-top:16px;padding:12px 28px;font-size:12px">GEM 1RM</button>
+  </div>
+  <div class="databtns">
+    <button class="dbtn" id="expbtn">EKSPORTER DATA</button>
+    <button class="dbtn" id="impbtn">IMPORTER DATA</button>
+    <button class="dbtn red" id="rstbtn">RESET ALT</button>
+    <input type="file" id="impfile" accept=".json" style="display:none">
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+(function(){
+"use strict";
+
+var DL=[5,10];
+var PROG={
+  dag1:{label:"DAG 1",title:"UPPER BODY",day:"Mandag",color:"#C4A86B",ex:[
+    {id:"bench",  name:"Bench Press",           t:"bench", sets:"72.5% x8 / 77.5% x6 / 82.5% x4+",  note:"3-5 min hvil. 3. saet: max reps."},
+    {id:"flatdb", name:"Flat DB Press",          t:"free",  sets:"2 x Max Reps",                       note:"Vaelg vaegt til ~20 reps saet 1."},
+    {id:"crow",   name:"Cable Rows (overhand)",  t:"free",  sets:"4 x 15",                             note:"Superset 3a/3b med pushdowns"},
+    {id:"tri",    name:"Triceps Pushdowns",      t:"free",  sets:"4 x 15",                             note:"Superset med rows"},
+    {id:"shrug",  name:"DB Shrugs 2 sek hold",  t:"free",  sets:"3 x 15",                             note:"Superset 4a/4b"},
+    {id:"lat",    name:"DB Lateral Raises",      t:"free",  sets:"3 x 15",                             note:"Superset med shrugs"},
+    {id:"cx1",    name:"Barbell Complex",        t:"free",  sets:"2 x 10 reps pr oevelse. Hvil 90s",   note:"DL - Row - Hang Clean - Push Press - Squat"}
+  ]},
+  dag2:{label:"DAG 2",title:"LOWER BODY",day:"Onsdag",color:"#8888FF",ex:[
+    {id:"sqj",    name:"DB Squat Jumps 10lb",   t:"free",  sets:"4 x 6",                              note:"Eksplosiv - fuld reset"},
+    {id:"tbdl",   name:"Trap Bar Deadlift",      t:"tbdl",  sets:"72.5% x8 / 77.5% x6 / 82.5% x4",   note:"Noeter reps paa 3. saet."},
+    {id:"back",   name:"45 Degrees Back Raises", t:"free",  sets:"3 x 15",                             note:"Hold vaegtskive over bryst"},
+    {id:"mbt",    name:"Seated MB Twists",       t:"free",  sets:"3 x 20/side",                        note:"Foedder loeftet"},
+    {id:"run",    name:"Timed 1-Mile Run",       t:"time",  sets:"1 x saa hurtigt som muligt",          note:"Noeter tid. Beat det naeste uge."}
+  ]},
+  dag3:{label:"DAG 3",title:"UPPER BODY",day:"Fredag",color:"#C4A86B",ex:[
+    {id:"chin",   name:"Chin-ups total reps",    t:"chin",  sets:"Max + 50-80%",                       note:"Del op som du vil. Ingen krav."},
+    {id:"pull",   name:"Lat Pulldowns wide",     t:"free",  sets:"2 x Max Reps",                       note:"20-25 reps saet 1"},
+    {id:"mil",    name:"DB Military Press",      t:"free",  sets:"2 x Max Reps",                       note:"15-20 reps saet 1"},
+    {id:"rtri",   name:"Rolling Triceps Ext",    t:"free",  sets:"4 x 8",                              note:"Superset 3a/3b"},
+    {id:"ham",    name:"Hammer Curls",           t:"free",  sets:"4 x 8",                              note:"Superset med triceps"},
+    {id:"core",   name:"Core Circuit x 2",       t:"free",  sets:"Toe Touch x20 / Bicycle x30 / Side Plank 30s", note:""},
+    {id:"pu100",  name:"100 Push-ups",           t:"time",  sets:"1 saet - noeter tid",                note:"Beat din tid hver uge."}
+  ]},
+  dag4:{label:"DAG 4",title:"POWER + ATHLETIC",day:"Lørdag",color:"#E05252",ex:[
+    {id:"pc",     name:"Power Clean",            t:"free",  sets:"5 x 3",                              note:"60-70% - eksplosivitet > vaegt. Fuld reset."},
+    {id:"hpc",    name:"Hang Power Clean",       t:"free",  sets:"3 x 3",                              note:"Fra knaehojde"},
+    {id:"bj",     name:"Box Jump",               t:"free",  sets:"3 x 4",                              note:"Maks hojde. Stig ned."},
+    {id:"rdl",    name:"DB RDL",                 t:"free",  sets:"3 x 10",                             note:"Superset med Copenhagen Plank"},
+    {id:"cop",    name:"Copenhagen Plank",       t:"free",  sets:"3 x 20 sek/side",                    note:"Superset med RDL"},
+    {id:"cx4",    name:"Barbell Complex finisher",t:"free", sets:"3 runder",                            note:"DL - Bent Row - Hang Clean - Push Press"}
+  ]}
+};
+
+var BS={
+  1:[[0.725,8],[0.775,6],[0.825,"4+"]],2:[[0.75,7],[0.80,5],[0.85,"3+"]],
+  3:[[0.775,6],[0.825,4],[0.90,"2+"]],4:[[0.80,5],[0.85,3],[0.95,"1+"]],
+  5:[[0.50,5],[0.60,5]],6:[[0.725,8],[0.775,6],[0.825,"4+"]],
+  7:[[0.75,7],[0.80,5],[0.85,"3+"]],8:[[0.775,6],[0.825,4],[0.90,"2+"]],
+  9:[[0.80,5],[0.85,3],[0.95,"1+"]],10:[[0.50,5],[0.60,5]],
+  11:[[0.80,4],[0.875,2],[0.925,1],[0.975,1]],12:null
+};
+var TS={
+  1:[[0.725,8],[0.775,6],[0.825,4]],2:[[0.75,7],[0.80,5],[0.85,3]],
+  3:[[0.775,6],[0.825,4],[0.90,2]],4:[[0.80,5],[0.85,3],[0.95,1]],
+  5:[[0.50,5],[0.60,5]],6:[[0.725,8],[0.775,6],[0.825,"4+"]],
+  7:[[0.75,7],[0.80,5],[0.85,"3+"]],8:[[0.775,6],[0.825,4],[0.90,"2+"]],
+  9:[[0.80,5],[0.85,3],[0.95,"1+"]],10:[[0.50,5],[0.60,5]],
+  11:[[0.80,4],[0.875,2],[0.925,1],[0.975,1]],12:[[0.80,5],[0.85,3]]
+};
+var CP={1:50,2:50,3:60,4:60,5:50,6:60,7:60,8:70,9:70,10:50,11:80,12:100};
+
+var S={ok:false,b:0,t:0,c:0,w:1,d:"dag1",L:{},K:{},C:{}};
+
+function ld(){try{var r=localStorage.getItem("blab5");if(r){var d=JSON.parse(r);for(var k in d)S[k]=d[k];}}catch(e){}}
+function sv(){try{localStorage.setItem("blab5",JSON.stringify(S));}catch(e){}}
+function g(id){return document.getElementById(id);}
+function r25(n){return Math.round(n/2.5)*2.5;}
+
+function wsHTML(rm,sch){
+  if(!rm||!sch)return '<div class="nrm">'+(rm?'Uge 12: max-rep test':'Ingen 1RM - gaa til Log')+'</div>';
+  var h='<div class="wsets">';
+  for(var i=0;i<sch.length;i++){
+    var kg=r25(rm*sch[i][0]);
+    h+='<div class="wset"><div class="wsetpct">'+Math.round(sch[i][0]*100)+'%</div>'+
+       '<div class="wsetkg">'+kg+'<span style="font-size:13px;font-weight:400"> kg</span></div>'+
+       '<div class="wsetreps">x '+sch[i][1]+' reps</div></div>';
+  }
+  return h+'</div>';
+}
+
+ld();
+
+// tab events
+g("tb0").addEventListener("click",function(){tab(0);});
+g("tb1").addEventListener("click",function(){tab(1);});
+g("tb2").addEventListener("click",function(){tab(2);});
+
+function tab(n){
+  for(var i=0;i<3;i++){
+    g("tb"+i).className="ntab"+(i===n?" on":"");
+    g("s"+i).style.display=i===n?"block":"none";
+  }
+  if(n===0)renderT();
+  if(n===2)renderP();
+}
+
+// setup
+g("startbtn").addEventListener("click",function(){
+  var b=parseFloat(g("sb").value)||0;
+  var t=parseFloat(g("st").value)||0;
+  var c=parseFloat(g("sc").value)||0;
+  if(!b&&!t&&!c){alert("Indtast mindst ét tal.");return;}
+  S.b=b;S.t=t;S.c=c;S.ok=true;sv();
+  g("setup").style.display="none";
+  tab(0);
+});
+
+// complete
+g("compbtn").addEventListener("click",function(){
+  var sk="w"+S.w+"_"+S.d;
+  S.C[sk]=true;sv();
+  g("compbtn").textContent="SESSION FULDFOERT";
+  g("compbtn").className="compbtn on";
+  renderDcards();
+  updateTag();
+});
+
+// rm save
+g("rmsave").addEventListener("click",function(){
+  S.b=parseFloat(g("rb").value)||S.b;
+  S.t=parseFloat(g("rt").value)||S.t;
+  S.c=parseFloat(g("rc").value)||S.c;
+  sv();alert("Gemt.");
+});
+
+// export
+g("expbtn").addEventListener("click",function(){
+  var bl=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(bl);
+  a.download="blab-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+});
+g("impbtn").addEventListener("click",function(){g("impfile").click();});
+g("impfile").addEventListener("change",function(e){
+  var f=e.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(ev){
+    try{var d=JSON.parse(ev.target.result);for(var k in d)S[k]=d[k];sv();
+      if(S.ok){g("setup").style.display="none";tab(0);}
+      alert("Importeret.");
+    }catch(er){alert("Fejl: Ugyldigt format.");}
+  };rd.readAsText(f);
+});
+g("rstbtn").addEventListener("click",function(){
+  if(confirm("Alt slettes permanent?")){localStorage.removeItem("blab5");location.reload();}
+});
+
+function renderT(){renderWbar();renderDcards();renderSess();updateTag();}
+
+function renderWbar(){
+  var bar=g("wbar");bar.innerHTML="";
+  for(var w=1;w<=12;w++){
+    var isDL=DL.indexOf(w)>=0;
+    var b=document.createElement("button");
+    b.className="wbtn"+(w===S.w?" on":"")+(isDL?" dl":"");
+    b.textContent=isDL?"UGE "+w+" (D)":"UGE "+w;
+    (function(wk){b.addEventListener("click",function(){S.w=wk;sv();renderT();});})(w);
+    bar.appendChild(b);
+  }
+}
+
+function renderDcards(){
+  var sel=g("dcards");sel.innerHTML="";
+  ["dag1","dag2","dag3","dag4"].forEach(function(k){
+    var dy=PROG[k];
+    var sk="w"+S.w+"_"+k;
+    var dn=S.C[sk];var ac=k===S.d;
+    var div=document.createElement("div");
+    div.className="dcard"+(ac?" on":"")+(dn?" done":"");
+    div.innerHTML='<div class="dcardlabel">'+dy.label+'</div>'+
+      '<div class="dcardtitle" style="color:'+dy.color+'">'+dy.title+'</div>'+
+      '<div class="dcardday">'+dy.day+'</div>';
+    (function(key){div.addEventListener("click",function(){S.d=key;sv();renderT();});})(k);
+    sel.appendChild(div);
+  });
+}
+
+function renderSess(){
+  var w=S.w;var dk=S.d;var dy=PROG[dk];var sk="w"+w+"_"+dk;
+  g("dlbanner").style.display=DL.indexOf(w)>=0?"flex":"none";
+  g("slbl").textContent="UGE "+w+" // "+dy.day.toUpperCase();
+  g("stitle").innerHTML='<span style="color:'+dy.color+'">'+dy.label+'</span> '+dy.title;
+  var list=g("exlist");list.innerHTML="";
+  dy.ex.forEach(function(ex,idx){list.appendChild(mkCard(ex,idx,w,sk));});
+  var dn=S.C[sk];
+  g("compbtn").textContent=dn?"SESSION FULDFOERT":"MARKER SESSION SOM FAERDIG";
+  g("compbtn").className="compbtn"+(dn?" on":"");
+}
+
+function mkCard(ex,idx,week,sk){
+  var ck=sk+"_"+ex.id;
+  var lk=sk+"_"+ex.id+"_l";
+  var nk=sk+"_"+ex.id+"_n";
+  var dn=S.K[ck];
+
+  var card=document.createElement("div");
+  card.className="excard"+(dn?" done":"");
+
+  var hdr=document.createElement("div");
+  hdr.className="exhader";
+
+  var num=document.createElement("div");
+  num.className="exnum";
+  num.textContent=(idx<9?"0":"")+(idx+1);
+
+  var info=document.createElement("div");
+  info.className="exinfo";
+  var en=document.createElement("div");en.className="exname";en.textContent=ex.name;
+  var es=document.createElement("div");es.className="exsets";es.textContent=ex.sets;
+  info.appendChild(en);info.appendChild(es);
+
+  var arr=document.createElement("span");arr.className="exarrow";arr.textContent="▾";
+
+  var chk=document.createElement("div");
+  chk.className="excheck"+(dn?" on":"");
+  if(dn)chk.innerHTML='<span style="color:#000;font-size:11px;font-weight:700">&#10003;</span>';
+
+  hdr.appendChild(num);hdr.appendChild(info);hdr.appendChild(arr);hdr.appendChild(chk);
+
+  var body=document.createElement("div");body.className="exbody";
+
+  if(ex.note){var nt=document.createElement("div");nt.className="exnotes";nt.textContent=ex.note;body.appendChild(nt);}
+
+  if(ex.t==="bench"){var wd=document.createElement("div");wd.innerHTML=wsHTML(S.b,BS[week]);body.appendChild(wd);}
+  else if(ex.t==="tbdl"){var wd2=document.createElement("div");wd2.innerHTML=wsHTML(S.t,TS[week]);body.appendChild(wd2);}
+  else if(ex.t==="chin"){
+    var cb=document.createElement("div");
+    if(S.c>0){var pct=CP[week]||50;var tot=Math.ceil(S.c*(1+pct/100));
+      cb.className="chinbox";
+      cb.innerHTML='<div class="chintot">'+tot+' <span style="font-size:16px;font-weight:400;color:#888">total reps</span></div>'+
+        '<div class="chinsub">Max ('+S.c+') + '+pct+'% = '+tot+'. Del op som du vil.</div>';
+    }else{cb.className="nrm";cb.textContent="Indtast chin-up max i Log";}
+    body.appendChild(cb);
+  }
+
+  if(ex.t==="time"){
+    var tr=document.createElement("div");tr.className="logrow";
+    var tl=document.createElement("div");tl.className="loglbl";tl.textContent="TID:";
+    var ti=document.createElement("input");ti.className="loginput";ti.type="text";
+    ti.placeholder="f.eks. 7:42";ti.value=S.L[lk]||"";
+    (function(key){ti.addEventListener("input",function(){S.L[key]=this.value;sv();});})(lk);
+    tr.appendChild(tl);tr.appendChild(ti);body.appendChild(tr);
+  }
+
+  var nr=document.createElement("div");nr.className="logrow";nr.style.marginTop="8px";
+  var nl=document.createElement("div");nl.className="loglbl";nl.textContent="NOTER:";
+  var ni=document.createElement("input");ni.className="loginput";ni.type="text";
+  ni.placeholder="Vaegt, reps...";ni.value=S.L[nk]||"";
+  (function(key){ni.addEventListener("input",function(){S.L[key]=this.value;sv();});})(nk);
+  nr.appendChild(nl);nr.appendChild(ni);body.appendChild(nr);
+
+  hdr.addEventListener("click",function(e){
+    if(e.target===chk||chk.contains(e.target))return;
+    card.classList.toggle("open");
+  });
+  chk.addEventListener("click",function(e){
+    e.stopPropagation();
+    S.K[ck]=!S.K[ck];sv();
+    var d=S.K[ck];
+    card.classList.toggle("done",d);
+    chk.className="excheck"+(d?" on":"");
+    chk.innerHTML=d?'<span style="color:#000;font-size:11px;font-weight:700">&#10003;</span>':"";
+  });
+
+  card.appendChild(hdr);card.appendChild(body);
+  return card;
+}
+
+function updateTag(){
+  var n=Object.keys(S.C).length;
+  g("htag").textContent="DEFRANCOS TRAINING SYSTEMS // "+n+"/48 SESSIONS DONE";
+}
+
+function renderP(){
+  g("psub").textContent="BENCH: "+(S.b||"-")+" KG // TBDL: "+(S.t||"-")+" KG // CHIN: "+(S.c||"-")+" REPS";
+  var tot=Object.keys(S.C).length;
+  var pw=Object.keys(S.C).filter(function(k){return k.indexOf("dag4")>=0;}).length;
+  g("statsrow").innerHTML=
+    '<div class="statcard"><div class="statlabel">SESSIONER</div><div class="statval">'+tot+'/48</div></div>'+
+    '<div class="statcard"><div class="statlabel">UGE</div><div class="statval">'+S.w+'/12</div></div>'+
+    '<div class="statcard"><div class="statlabel">POWER DAGE</div><div class="statval">'+pw+'/12</div></div>';
+  var rh="",ph="";
+  for(var w=1;w<=12;w++){
+    if(DL.indexOf(w)>=0)continue;
+    var rt=S.L["w"+w+"_dag2_run_l"]||"";var rn=S.L["w"+w+"_dag2_run_n"]||"";
+    rh+='<tr><td class="twk">Uge '+w+'</td><td class="ttm" style="color:'+(rt?"#C4A86B":"#333")+'">'+( rt||"-")+'</td><td style="font-size:12px;color:#888">'+rn+'</td></tr>';
+    var pt=S.L["w"+w+"_dag3_pu100_l"]||"";
+    ph+='<tr><td class="twk">Uge '+w+'</td><td class="ttm" style="color:'+(pt?"#C4A86B":"#333")+'">'+( pt||"-")+'</td><td style="font-size:12px;color:#888">'+(S.L["w"+w+"_dag3_pu100_n"]||"")+'</td></tr>';
+  }
+  g("runlog").innerHTML=rh;g("pulog").innerHTML=ph;
+  g("rb").value=S.b||"";g("rt").value=S.t||"";g("rc").value=S.c||"";
+}
+
+if(S.ok){g("setup").style.display="none";tab(0);}
+
+})();
+</script>
+
+</body>
+</html>
